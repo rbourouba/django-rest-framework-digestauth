@@ -1,3 +1,4 @@
+import base64
 import os
 import time
 import hashlib
@@ -8,6 +9,7 @@ from django.test import Client, TestCase
 from rest_framework.tests.test_authentication import MockView
 from rest_framework.authtoken.models import Token
 from rest_framework.compat import patterns
+from rest_framework import HTTP_HEADER_ENCODING
 
 from rest_framework_digestauth.authentication import DigestAuthentication
 from rest_framework_digestauth.utils import parse_dict_header
@@ -60,6 +62,14 @@ def build_digest_header(username, password, challenge_header, method, path):
     return 'Digest %s' % base
 
 
+def build_basic_header(username, password):
+    credentials = '%s:%s' % (username, password)
+    base64_credentials = base64.b64encode(
+        credentials.encode(HTTP_HEADER_ENCODING)
+    ).decode(HTTP_HEADER_ENCODING)
+    return 'Basic %s' % base64_credentials
+
+
 class DigestAuthTests(TestCase):
     """Digest Authentication"""
 
@@ -95,3 +105,14 @@ class DigestAuthTests(TestCase):
                                          {'example': 'example'},
                                          HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 200)
+
+    def test_basic_access(self):
+        """Test if a basic access attempt results in another 401."""
+
+        response = self.csrf_client.post('/digest-auth/',
+                                         {'example': 'example'})
+        auth = build_basic_header('john', 'abcd1234')
+        response = self.csrf_client.post('/digest-auth/',
+                                         {'example': 'example'},
+                                         HTTP_AUTHORIZATION=auth)
+        self.assertEqual(response.status_code, 401)

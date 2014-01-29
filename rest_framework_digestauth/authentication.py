@@ -29,12 +29,15 @@ class DigestAuthentication(BaseAuthentication):
 
     def authenticate(self, request):
         if 'HTTP_AUTHORIZATION' in request.META:
-            self.parse_authorization_header(request.META['HTTP_AUTHORIZATION'])
-            self.check_authorization_request_header()
-            user = self.get_user()
-            password = self.get_token(user)
-            if self.check_digest_auth(request, password):
-                return user, None
+            auth_header = request.META['HTTP_AUTHORIZATION']
+            if auth_header.startswith('Digest '):
+                auth_header = auth_header.replace('Digest ', '')
+                self.auth_header = parse_dict_header(auth_header)
+                self.check_authorization_request_header()
+                user = self.get_user()
+                password = self.get_token(user)
+                if self.check_digest_auth(request, password):
+                    return user, None
 
     def authenticate_header(self, request):
         """

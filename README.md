@@ -1,6 +1,6 @@
 # Django Rest Framework DigestAuth
 
-[![Build Status](https://travis-ci.org/juanriaza/django-rest-framework-digestauth.png?branch=master)](https://travis-ci.org/juanriaza/django-rest-framework-digestauth)
+[![Build Status](https://travis-ci.org/Multiposting/django-rest-framework-digestauth.png?branch=master)](https://travis-ci.org/juanriaza/django-rest-framework-digestauth)
 
 
 

@@ -3,8 +3,8 @@ from django.db import models
 
 
 class DigestAuthCounter(models.Model):
-    server_nonce = models.TextField()
-    client_nonce = models.TextField()
+    server_nonce = models.CharField(max_length=255)
+    client_nonce = models.CharField(max_length=255)
     client_counter = models.IntegerField(null=True)
 
     created = models.DateTimeField(auto_now_add=True)
